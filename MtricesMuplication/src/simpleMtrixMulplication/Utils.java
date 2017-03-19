@@ -29,8 +29,8 @@ public class Utils {
 	public  static void printMatrix(int[][] c) {
 		// TODO Auto-generated method stub
 		System.out.println("result matrices: -");
-		for (int a = 0; a < c.length; a++) {
-			for (int b = 0; b < c[0].length; b++) {
+		for (int a = 0; a < c.length && a< 100; a++) {
+			for (int b = 0; b < c[0].length && a< 100; b++) {
 				System.out.print(c[a][b] + "\t");
 
 			}

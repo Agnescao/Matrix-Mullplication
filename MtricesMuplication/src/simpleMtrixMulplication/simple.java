@@ -24,7 +24,7 @@ public class simple {
 			System.err.println("Number of cores:\t" + threadsNumber);
 
 			startTime = System.nanoTime();
-			int[][] C = parallelMult(A, B);
+			int[][] C = parallelMult(A, B, threadsNumber);
 			finishTime = System.nanoTime();
 			Utils.printMatrix(C);
 			System.out.println("Multiplication  with " + threadsNumber + " threads took "
@@ -32,7 +32,7 @@ public class simple {
 		}
 	}
 
-	private static int[][] parallelMult(int[][] a, int[][] b) {
+	public static int[][] parallelMult(int[][] a, int[][] b,  int threadsNumber) {
 
 		ExecutorService executor = Executors.newFixedThreadPool(threadsNumber);
 
