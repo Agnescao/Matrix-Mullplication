@@ -12,17 +12,21 @@ public class simple {
 	static int N = 0;;
 	public static void main(String args[]) {
 		
-		N = inputN();
-		int[][] A = generator(N);
-		int[][] B = generator(N);
-		System.err.println("Number of cores:\t" + threadsNumber);
-		
-		long startTime = System.nanoTime();
-		int[][] C = parallelMult(A, B);
-		long finishTime = System.nanoTime();
-
-		System.out.println("Multiplication  with " + threadsNumber + " threads took " + (finishTime - startTime) / 1000000.0 + " milliseconds.");
-		printMatrix(C);
+		long startTime = 0;
+		long finishTime = 0;
+		while(N != -1) {
+			N = inputN();
+			int[][] A = generator(N);
+			int[][] B = generator(N);
+			System.err.println("Number of cores:\t" + threadsNumber);
+			
+			startTime = System.nanoTime();
+			int[][] C = parallelMult(A, B);
+			finishTime = System.nanoTime();
+	
+			System.out.println("Multiplication  with " + threadsNumber + " threads took " + (finishTime - startTime) / 1000000.0 + " milliseconds.");
+			printMatrix(C);
+		}
 	}
 
 
@@ -72,7 +76,7 @@ public class simple {
 			} catch (ExecutionException e) {
 				e.printStackTrace();
 			}	
-			for(int[] row : CF){
+			for(int[] row : CF) {
 				result[actualtRow] = row;
 				actualtRow++;
 			}

@@ -24,7 +24,7 @@ public class LineMultiplier implements Callable<int[][]> {
 	public int[][] call() throws Exception {
 		int[][] result = new int[rowsToDo][a.length];
 		int row = 0;
-		for (int i = start; row <= rowsToDo; i++) {
+		for (int i = start; row < rowsToDo; i++) {
 			for (int k = 0; k < b.length; k++) {
 				for (int j = 0; j < b[0].length; j++) {
 					result[row][j] += a[i][k] * b[k][j];
