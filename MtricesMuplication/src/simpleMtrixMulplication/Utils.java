@@ -19,7 +19,7 @@ public class Utils {
 		int[][] A = new int[n][n];
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				A[i][j] = 1;
+				A[i][j] = 2;
 			}
 		}
 
