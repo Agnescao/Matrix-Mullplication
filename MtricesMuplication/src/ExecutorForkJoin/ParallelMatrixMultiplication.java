@@ -5,8 +5,8 @@ import java.util.concurrent.*;
 
 public class ParallelMatrixMultiplication {
 
-	private double[][] a;
-	private double[][] b;
+	private double[][] tA;
+	private double[][] tB;
 	private double[][] c;
 	private static final int MATRIX_SIZE = 1024,
 							 POOL_SIZE = Runtime.getRuntime().availableProcessors(),
@@ -16,21 +16,21 @@ public class ParallelMatrixMultiplication {
 
 	ParallelMatrixMultiplication(double[][] a, double[][] b) {
 		// assumption : a and b are both double[MATRIX_SIZE][MATRIX_SIZE]
-		this.a = a;
-		this.b = b;
+		this.tA = a;
+		this.tB = b;
 		this.c = new double[MATRIX_SIZE][MATRIX_SIZE];
 	}
 
 
 	// Debugging Code
 	ParallelMatrixMultiplication() {
-		a = new double[MATRIX_SIZE][MATRIX_SIZE];
-		b = new double[MATRIX_SIZE][MATRIX_SIZE];
+		tA = new double[MATRIX_SIZE][MATRIX_SIZE];
+		tB = new double[MATRIX_SIZE][MATRIX_SIZE];
 		c = new double[MATRIX_SIZE][MATRIX_SIZE];
-		for (int i = 0; i < a.length; ++i) {
-			for (int j = 0; j < a.length; ++j) {
-				a[i][j] = 1.0;
-				b[i][j] = 1.0;
+		for (int i = 0; i < tA.length; ++i) {
+			for (int j = 0; j < tA.length; ++j) {
+				tA[i][j] = 1.0;
+				tB[i][j] = 1.0;
 			}
 		}
 	}
@@ -38,7 +38,7 @@ public class ParallelMatrixMultiplication {
 	public void check() {
 		for (int i = 0; i < c.length; ++i) {
 			for (int j = 0; j < c.length; ++j) {
-				if (Math.abs(c[i][j]-a.length) > 1e-10) {
+				if (Math.abs(c[i][j]-tA.length) > 1e-10) {
 					System.out.format("%.3f\n",c[i][j]);
 				}
 			}
@@ -50,7 +50,7 @@ public class ParallelMatrixMultiplication {
 
 	public void multiply() {
 		//multiplyRecursive(0, 0, 0, 0, 0, 0, a.length);
-		Future f = exec.submit(new MultiplyTask(a, b, c, 0, 0, 0, 0, 0, 0, a.length));
+		Future f = exec.submit(new MultiplyTask(tA, tB, c, 0, 0, 0, 0, 0, 0, tA.length));
 		try {
 			f.get();
 			exec.shutdown();
