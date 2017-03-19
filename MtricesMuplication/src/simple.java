@@ -8,33 +8,96 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class simple {
-
+	static int threadsNumber = Runtime.getRuntime().availableProcessors();
+	static int N = 0;;
 	public static void main(String args[]) {
 		
-		int N = inputN();
+		N = inputN();
 		int[][] A = generator(N);
 		int[][] B = generator(N);
-		int threads = Runtime.getRuntime().availableProcessors();
-		System.err.println("Number of cores:\t" + threads);
-		int[][] C = parallelMult(A, B);
-		printMatrix(C);
+		System.err.println("Number of cores:\t" + threadsNumber);
 		
+		long startTime = System.nanoTime();
+		int[][] C = parallelMult(A, B);
+		long finishTime = System.nanoTime();
 
+		System.out.println("Multiplication  with " + threadsNumber + " threads took " + (finishTime - startTime) / 1000000.0 + " milliseconds.");
+		printMatrix(C);
 	}
 
+
+	private static int[][] parallelMult(int[][] a, int[][] b) {
+		
+		ExecutorService executor = Executors.newFixedThreadPool(threadsNumber);
+		
+		List<Future<int[][]>> list = initThrets(executor, a, b);
+		
+		int[][] result = retriveResults(list, executor);
+		
+		return result;
+	}
+
+	public static List<Future<int[][]>> initThrets(ExecutorService executor, int[][] a, int[][] b) {
+		List<Future<int[][]>> list = new ArrayList();
+		int startLine = 0;
+		int extraRowsNo = a.length % threadsNumber;
+		int step = a.length / threadsNumber;
+		int extraStep = 0;
+		
+		while (startLine < N) {
+			if(extraRowsNo > 0){
+				extraStep = 1;
+				extraRowsNo --;
+			} else {
+				extraStep = 0;
+			}
+			System.out.println("a, b " + startLine + "; " + step  + " + " + extraStep);
+			Callable<int[][]> worker = new LineMultiplier(a, b, startLine, step + extraStep);
+			Future<int[][]> submit = executor.submit(worker);
+			list.add(submit);
+			startLine += step + extraStep;
+		}
+		return list;
+	}
+	
+	public static int[][] retriveResults (List<Future<int[][]>> list, ExecutorService executor) {
+		int[][] result = new int[N][N];
+		int actualtRow = 0;
+		int CF[][] = null;
+		for (Future<int[][]> future : list) {
+			try {
+				CF = future.get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}	
+			for(int[] row : CF){
+				result[actualtRow] = row;
+				actualtRow++;
+			}
+		}
+		executor.shutdown();
+
+
+		return result;
+
+	}
+	
+	
 	private static int inputN() {
 		// TODO Auto-generated method stub
 		Scanner scan = new Scanner(System.in);
 		System.out.println("simple Algorithm Test\n");
 		System.out.println("Enter order n :");
-		int N = scan.nextInt();
-		return N;
+		int n = scan.nextInt();
+		return n;
 	}
 
-	private static int[][] generator(int N) {
-		int[][] A = new int[N][N];
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
+	private static int[][] generator(int n) {
+		int[][] A = new int[n][n];
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
 				A[i][j] = 1;
 			}
 		}
@@ -55,73 +118,6 @@ public class simple {
 
 	}
 
-	private static int[][] parallelMult(int[][] a, int[][] b) {
-		// TODO Auto-generated method stub
-		int[][] C = new int[a.length][b[0].length];
-		int threadsNumber = 4;
-		ExecutorService executor = Executors.newFixedThreadPool(4);
-		List<Future<int[][]>> list = new ArrayList<Future<int[][]>>();
-		int mod = a.length % threadsNumber;
-		
-		int part = a.length / threadsNumber;
-		
-		if (part < 1) {
-			part = 1;
-		}
-		long startTime = System.nanoTime();
-
-		for (int i = 0; i < a.length; i += part) {
-			int j=i+ part;
-			if(mod == 1 && i ==a.length-1){
-				j= i+1;
-			}else if(mod ==2 && i ==a.length -2){
-					j =i+2;
-			}else if(mod ==3 && i == a.length-3){
-					j=i+3;
-			}else{
-				j=j;
-				}
-			Callable<int[][]> worker = new LineMultiplier(a, b, i, j, mod);
-			Future<int[][]> submit = executor.submit(worker);
-			list.add(submit);
-		}
-		
-		long finishTime = System.nanoTime();
-		
-		System.out.println("Multiplication  with " + threadsNumber + " threads took "
-				+ (finishTime - startTime) / 1000000.0 + " milliseconds.");
-
-		// now retrieve the result
-		int start = 0;
-		int CF[][];
-		
-		for (Future<int[][]> future : list) {
-			try {
-				CF = future.get();
-				int l=start + part;
-				if(mod == 1 && start ==a.length-1){
-					l= l+1;
-				}else if(mod ==2 && start ==a.length -2){
-					l= l+2;
-				}else if(mod ==3 && start == a.length-3){
-					l= l+3;
-				}else{
-					
-					}
-				for (int i = start; i < l; i++) {
-					C[i] = CF[i];
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
-			start += part;
-		}
-		executor.shutdown();
-		
-		return C;
-
-	}
-	 
+	
+	
 }
