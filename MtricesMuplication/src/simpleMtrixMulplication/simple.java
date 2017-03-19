@@ -26,10 +26,9 @@ public class simple {
 			startTime = System.nanoTime();
 			int[][] C = parallelMult(A, B);
 			finishTime = System.nanoTime();
-
+			Utils.printMatrix(C);
 			System.out.println("Multiplication  with " + threadsNumber + " threads took "
 					+ (finishTime - startTime) / 1000000.0 + " milliseconds.");
-		//	Utils.printMatrix(C);
 		}
 	}
 
