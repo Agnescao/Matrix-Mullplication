@@ -8,6 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
+import simpleMtrixMulplication.Utils;
+
 public class StrassenAlgorthim {
 	/**
 	 * Function to multiply matrices
@@ -58,7 +60,7 @@ public class StrassenAlgorthim {
 		 * B12) M7 = (A12 - A22) (B21 + B22)
 		 **/
 
-		ExecutorService executor = Executors.newFixedThreadPool(4);
+		ExecutorService executor = Executors.newFixedThreadPool(7);
 		List<FutureTask<int[][]>> taskList1 = new ArrayList<FutureTask<int[][]>>();
 		// Start thread for the first half of the numbers
 		FutureTask<int[][]> futureTask_2 = new FutureTask<int[][]>(new Callable<int[][]>() {
@@ -195,34 +197,18 @@ public class StrassenAlgorthim {
 	 * @throws InterruptedException
 	 **/
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Strassen Multiplication Algorithm Test\n");
-		/** Make an object of Strassen class **/
-		StrassenAlgorthim s = new StrassenAlgorthim();
-
-		System.out.println("Enter order n :");
-		int N = scan.nextInt();
-		/** Accept two 2d matrices **/
-
-		int[][] A = new int[N][N];
-		for (int i = 0; i < N; i++)
-			for (int j = 0; j < N; j++)
-				A[i][j] = 1;
-
-		int[][] B = new int[N][N];
-		for (int i = 0; i < N; i++)
-			for (int j = 0; j < N; j++)
-				B[i][j] = 1;
-		long startTime = System.nanoTime();
-		int[][] C = s.multiply(A, B);
-		long finishTime = System.nanoTime();
-		System.out.println("Multiplication   took " + (finishTime - startTime) / 1000000.0 + " milliseconds.");
-		/*System.out.println("\nProduct of matrices A and  B : ");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++)
-				System.out.print(C[i][j] + " ");
-			System.out.println();
+		int N = 0;
+		while(N != 1){
+			System.out.println("Strassen Multiplication Algorithm Test\n");
+			StrassenAlgorthim s = new StrassenAlgorthim();
+			N = Utils.inputN();
+			int [][] A = Utils.generator(N);
+			int [][] B = Utils.generator(N);
+			
+			long startTime = System.nanoTime();
+			int[][] C = s.multiply(A, B);
+			long finishTime = System.nanoTime();
+			System.out.println("Multiplication   took " + (finishTime - startTime) / 1000000.0 + " milliseconds.");
 		}
-*/
 	}
 }

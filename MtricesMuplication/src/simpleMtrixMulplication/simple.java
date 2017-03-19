@@ -1,7 +1,7 @@
 package simpleMtrixMulplication;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -11,34 +11,36 @@ import java.util.concurrent.Future;
 public class simple {
 	static int threadsNumber = Runtime.getRuntime().availableProcessors();
 	static int N = 0;;
+
 	public static void main(String args[]) {
 		
 		long startTime = 0;
 		long finishTime = 0;
-		while(N != -1) {
-			N = inputN();
-			int[][] A = generator(N);
-			int[][] B = generator(N);
+		while (N != -1) {
+			System.out.println("simple Algorithm Test\n");
+			N = Utils.inputN();
+			int[][] A = Utils.generator(N);
+			int[][] B = Utils.generator(N);
 			System.err.println("Number of cores:\t" + threadsNumber);
-			
+
 			startTime = System.nanoTime();
 			int[][] C = parallelMult(A, B);
 			finishTime = System.nanoTime();
-	
-			System.out.println("Multiplication  with " + threadsNumber + " threads took " + (finishTime - startTime) / 1000000.0 + " milliseconds.");
-			printMatrix(C);
+
+			System.out.println("Multiplication  with " + threadsNumber + " threads took "
+					+ (finishTime - startTime) / 1000000.0 + " milliseconds.");
+		//	Utils.printMatrix(C);
 		}
 	}
 
-
 	private static int[][] parallelMult(int[][] a, int[][] b) {
-		
+
 		ExecutorService executor = Executors.newFixedThreadPool(threadsNumber);
-		
+
 		List<Future<int[][]>> list = initThrets(executor, a, b);
-		
+
 		int[][] result = retriveResults(list, executor);
-		
+
 		return result;
 	}
 
@@ -48,15 +50,15 @@ public class simple {
 		int extraRowsNo = a.length % threadsNumber;
 		int step = a.length / threadsNumber;
 		int extraStep = 0;
-		
+
 		while (startLine < N) {
-			if(extraRowsNo > 0){
+			if (extraRowsNo > 0) {
 				extraStep = 1;
-				extraRowsNo --;
+				extraRowsNo--;
 			} else {
 				extraStep = 0;
 			}
-			System.out.println("a, b " + startLine + "; " + step  + " + " + extraStep);
+			System.out.println("a, b " + startLine + "; " + step + " + " + extraStep);
 			Callable<int[][]> worker = new LineMultiplier(a, b, startLine, step + extraStep);
 			Future<int[][]> submit = executor.submit(worker);
 			list.add(submit);
@@ -64,8 +66,8 @@ public class simple {
 		}
 		return list;
 	}
-	
-	public static int[][] retriveResults (List<Future<int[][]>> list, ExecutorService executor) {
+
+	public static int[][] retriveResults(List<Future<int[][]>> list, ExecutorService executor) {
 		int[][] result = new int[N][N];
 		int actualtRow = 0;
 		int CF[][] = null;
@@ -76,53 +78,16 @@ public class simple {
 				e.printStackTrace();
 			} catch (ExecutionException e) {
 				e.printStackTrace();
-			}	
-			for(int[] row : CF) {
+			}
+			for (int[] row : CF) {
 				result[actualtRow] = row;
 				actualtRow++;
 			}
 		}
 		executor.shutdown();
 
-
 		return result;
 
 	}
-	
-	
-	private static int inputN() {
-		// TODO Auto-generated method stub
-		Scanner scan = new Scanner(System.in);
-		System.out.println("simple Algorithm Test\n");
-		System.out.println("Enter order n :");
-		int n = scan.nextInt();
-		return n;
-	}
 
-	private static int[][] generator(int n) {
-		int[][] A = new int[n][n];
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				A[i][j] = 1;
-			}
-		}
-			
-		return A;
-	}
-
-	private static void printMatrix(int[][] c) {
-		// TODO Auto-generated method stub
-		System.out.println("result matrices: -");
-		for (int a = 0; a < c.length; a++) {
-			for (int b = 0; b < c[0].length; b++) {
-				System.out.print(c[a][b] + "\t");
-
-			}
-			System.out.print("\n");
-		}
-
-	}
-
-	
-	
 }
