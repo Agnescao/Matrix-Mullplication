@@ -1,3 +1,4 @@
+package Strassen;
 /**
  ** Java Program to Implement Strassen Algorithm
  **/
@@ -5,7 +6,7 @@
 import java.util.Scanner;
  
 /** Class Strassen **/
-public class Strassen
+public class serialStrassen
 {
     /** Function to multiply matrices **/
     public int[][] multiply(int[][] A, int[][] B)
@@ -115,7 +116,7 @@ public class Strassen
         Scanner scan = new Scanner(System.in);
         System.out.println("Strassen Multiplication Algorithm Test\n");
         /** Make an object of Strassen class **/
-        Strassen s = new Strassen();
+        serialStrassen s = new serialStrassen();
  
         System.out.println("Enter order n :");
         int N = scan.nextInt();

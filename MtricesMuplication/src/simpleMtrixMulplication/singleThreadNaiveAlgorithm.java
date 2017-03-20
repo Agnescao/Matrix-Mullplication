@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-public class naive{
+public class singleThreadNaiveAlgorithm{
 	
 	public static void main(String args[]){
 	/*	int m, n, p, q, sum=0;

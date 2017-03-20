@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class simple {
+public class simpleAlgorithmMain {
 	static int threadsNumber =  Runtime.getRuntime().availableProcessors();
 	static int N = 0;;
 

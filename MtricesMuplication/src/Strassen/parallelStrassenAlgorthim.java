@@ -1,3 +1,4 @@
+package Strassen;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -7,9 +8,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import simpleMtrixMulplication.Utils;
-import simpleMtrixMulplication.simple;
+import simpleMtrixMulplication.simpleAlgorithmMain;
 
-public class StrassenAlgorthim {
+public class parallelStrassenAlgorthim {
 	/**
 	 * Function to multiply matrices
 	 * 
@@ -227,7 +228,7 @@ public class StrassenAlgorthim {
 		int N = 0;
 		while(N != 1){
 			System.out.println("Strassen Multiplication Algorithm Test\n");
-			StrassenAlgorthim s = new StrassenAlgorthim();
+			parallelStrassenAlgorthim s = new parallelStrassenAlgorthim();
 			N = Utils.inputN();
 			int [][] A = Utils.generator(N);
 			int [][] B = Utils.generator(N);
