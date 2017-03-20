@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 import simpleMtrixMulplication.Utils;
+import simpleMtrixMulplication.simple;
 
 public class StrassenAlgorthim {
 	/**
@@ -15,14 +16,15 @@ public class StrassenAlgorthim {
 	 * @throws ExecutionException
 	 * @throws InterruptedException
 	 **/
-	int thold = 5;
+	int thold = 2;
+	boolean firstRun = true;
 	public int[][] multiply(int[][] A, int[][] B) throws InterruptedException, ExecutionException {
 
 		int N = A.length;
-
 		int[][] R = new int[N][N];
 		/** base case **/
-		if (N <= thold) {
+		if (N <= thold || N == 3|| N == 5|| N == 7|| N == 9|| N == 11) {
+			//return simple.parallelMult(A, B, 2);
 			for (int i = 0; i < N; i++) {
 				for (int k = 0; k < N; k++) {
 					for (int j = 0; j < N; j++) {
@@ -38,15 +40,36 @@ public class StrassenAlgorthim {
 		 * M4 = A22 (B21 - B11) M5 = (A11 + A12) B22 M6 = (A21 - A11) (B11 +
 		 * B12) M7 = (A12 - A22) (B21 + B22)
 		 **/
-		List<FutureTask<int[][]>> taskList = runThrets(A, B, N);
+
+		final int[][] M1;
+		final int[][] M2;
+		final int[][] M3;
+		final int[][] M4;
+		final int[][] M5;
+		final int[][] M6;
+		final int[][] M7;
+
 		
-		final int[][] M1 = taskList.get(0).get();
-		final int[][] M2 = taskList.get(1).get();
-		final int[][] M3 = taskList.get(2).get();
-		final int[][] M4 = taskList.get(3).get();
-		final int[][] M5 = taskList.get(4).get();
-		final int[][] M6 = taskList.get(5).get();
-		final int[][] M7 = taskList.get(6).get();
+		if(firstRun){
+			firstRun = false;		
+			List<FutureTask<int[][]>> taskList = runThrets(A, B, N);
+			M1 = taskList.get(0).get();
+			M2 = taskList.get(1).get();
+			M3 = taskList.get(2).get();
+			M4 = taskList.get(3).get();
+			M5 = taskList.get(4).get();
+			M6 = taskList.get(5).get();
+			M7 = taskList.get(6).get();
+		} else {
+			List<int[][]> taskList = runCalculations(A, B, N);
+			M1 = taskList.get(0);
+			M2 = taskList.get(1);
+			M3 = taskList.get(2);
+			M4 = taskList.get(3);
+			M5 = taskList.get(4);
+			M6 = taskList.get(5);
+			M7 = taskList.get(6);
+		}
 
 		/**
 		 * C11 = M1 + M4 - M5 + M7 C12 = M3 + M5 C21 = M2 + M4 C22 = M1 - M2 +
@@ -67,7 +90,6 @@ public class StrassenAlgorthim {
 		return R;
 	}
 
-	
 	private List<FutureTask<int[][]>> runThrets (int[][] A, int[][] B, int N) {
 		ExecutorService executor = Executors.newFixedThreadPool(7);
 		List<FutureTask<int[][]>> taskList = new ArrayList<FutureTask<int[][]>>();
@@ -109,9 +131,48 @@ public class StrassenAlgorthim {
 		executor.shutdown();
 		return taskList;
 	}
+
+	private List<int[][]> runCalculations(int[][] A, int[][] B, int N) {
+		List<int[][]> taskList = new ArrayList();
+		int[][] A11 = new int[N / 2][N / 2];
+		int[][] A12 = new int[N / 2][N / 2];
+		int[][] A21 = new int[N / 2][N / 2];
+		int[][] A22 = new int[N / 2][N / 2];
+		int[][] B11 = new int[N / 2][N / 2];
+		int[][] B12 = new int[N / 2][N / 2];
+		int[][] B21 = new int[N / 2][N / 2];
+		int[][] B22 = new int[N / 2][N / 2];
+
+		/** Dividing matrix A into 4 halves **/
+		split(A, A11, 0, 0);
+		split(A, A12, 0, N / 2);
+		split(A, A21, N / 2, 0);
+		split(A, A22, N / 2, N / 2);
+		/** Dividing matrix B into 4 halves **/
+		split(B, B11, 0, 0);
+		split(B, B12, 0, N / 2);
+		split(B, B21, N / 2, 0);
+		split(B, B22, N / 2, N / 2);
+ 
+		try {
+			taskList.add(multiply(add(A11, A22), add(B11, B22)));
+			taskList.add(multiply(add(A21, A22), B11));
+			taskList.add(multiply(A11, sub(B12, B22)));
+			taskList.add(multiply(A22, sub(B21, B11)));
+			taskList.add(multiply(add(A11, A12), B22));
+			taskList.add(multiply(sub(A21, A11), add(B11, B12)));
+			taskList.add(multiply(sub(A12, A22), add(B21, B22)));
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+				
+		return taskList;
+	}
+
 	
 	private FutureTask<int[][]> runThret(int[][] a, int[][] b) {
-		System.out.println("a.size: " + a.length  + " b.size: " + b.length);
+		
 		FutureTask<int[][]> futureTask = new FutureTask<int[][]>(new Callable<int[][]>() {
 			@Override
 			public int[][] call() throws InterruptedException, ExecutionException {
@@ -119,9 +180,7 @@ public class StrassenAlgorthim {
 			}
 		});
 		return futureTask;
-			
 	}
-	
 	
 	/** Funtion to sub two matrices **/
 	public int[][] sub(int[][] A, int[][] B) {

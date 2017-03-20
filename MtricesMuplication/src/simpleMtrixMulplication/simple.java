@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class simple {
-	static int threadsNumber = Runtime.getRuntime().availableProcessors();
+	static int threadsNumber =  Runtime.getRuntime().availableProcessors();
 	static int N = 0;;
 
 	public static void main(String args[]) {
@@ -24,7 +24,7 @@ public class simple {
 			System.err.println("Number of cores:\t" + threadsNumber);
 
 			startTime = System.nanoTime();
-			int[][] C = parallelMult(A, B);
+			int[][] C = parallelMult(A, B, threadsNumber);
 			finishTime = System.nanoTime();
 			Utils.printMatrix(C);
 			System.out.println("Multiplication  with " + threadsNumber + " threads took "
@@ -32,7 +32,7 @@ public class simple {
 		}
 	}
 
-	private static int[][] parallelMult(int[][] a, int[][] b) {
+	public static int[][] parallelMult(int[][] a, int[][] b,  int threadsNumber) {
 
 		ExecutorService executor = Executors.newFixedThreadPool(threadsNumber);
 
@@ -57,7 +57,7 @@ public class simple {
 			} else {
 				extraStep = 0;
 			}
-			System.out.println("a, b " + startLine + "; " + step + " + " + extraStep);
+			
 			Callable<int[][]> worker = new LineMultiplier(a, b, startLine, step + extraStep);
 			Future<int[][]> submit = executor.submit(worker);
 			list.add(submit);

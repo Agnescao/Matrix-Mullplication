@@ -1,3 +1,4 @@
+package simpleMtrixMulplication;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,7 +10,7 @@ import java.util.concurrent.Future;
 public class naive{
 	
 	public static void main(String args[]){
-		int m, n, p, q, sum=0;
+	/*	int m, n, p, q, sum=0;
 		
 		Scanner in =new Scanner(System.in);
 		System.out.println("Enter the number of rows and colmuns of first matrix");
@@ -50,28 +51,40 @@ public class naive{
 			System.out.print("\n");
 		}
 		
-		
-		
-		
-		
-		for(int i=0; i<m;i++){
-			for(int j=0;j<q;j++){
-				for(int k=0; k<p; k++){
-					sum=sum+ first[i][k] * second[k][j];
+		*/
+		int N=0;
+		long startTime = 0;
+		long finishTime = 0;
+		while (N != -1) {
+			System.out.println("simple Algorithm Test\n");
+			N = Utils.inputN();
+			int[][] A = Utils.generator(N);
+			int[][] B = Utils.generator(N);
+			int sum=0;
+			startTime = System.nanoTime();
+			int [][] multiply= new int[A.length][B[0].length];
+		for(int i=0; i<A.length;i++){
+			for(int j=0;j<B.length;j++){
+				for(int k=0; k<B[0].length; k++){
+					sum=sum+ A[i][k] * B[k][j];
 				}
 				
 				multiply[i][j]=sum;
 				sum=0;
 			}
 		}
-		System.out.println("result matrices: -");
-		for(int a=0; a<m; a++){
-			for(int b=0;b<n; b++){
+		finishTime = System.nanoTime();
+		for(int a=0; a<A.length; a++){
+			for(int b=0;b<B[0].length; b++){
 				System.out.print(multiply[a][b] + "\t");
 				
 			}
 			System.out.print("\n");
 		}
+		
+		System.out.println("Multiplication  with 1 threads took "
+				+ (finishTime - startTime) / 1000000.0 + " milliseconds.");
+		System.out.println("result matrices: -");
 		
 	}
 		
